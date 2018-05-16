@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.quicktheories.QuickTheory.qt;
@@ -101,54 +100,15 @@ class DigitsToWordsTest {
         );
     }
 
-    /**
-     * Generate a list of all of our possible combinations of the digits
-     * Eg the input 123 can become [[123], [1, 23], [12, 3], [1, 2, 3]]
-     */
     @Test
-    void combinationGenerator() {
-        qt().forAll(strings().betweenCodePoints(0x0030, 0x0039).ofLength(20)).checkAssert(
-                inputString -> {
-                    List<String> listOfCombinations = DigitsToWords.digitListGeneratorIterator(inputString);
-                    if (inputString.length() == 0) {
-                        assertThat(listOfCombinations.size()).isEqualTo(1);
-                    } else {
-                        assertThat((double) listOfCombinations.size()).isEqualTo(Math.pow(2, inputString.length() - 1));
-                    }
-                    //assertThat(listOfCombinations).contains(inputString.split(""));
-                    assertThat(listOfCombinations).contains(inputString);
-                }
-        );
-    }
+    void doubleDigitFilter() {
+        assertThat(DigitsToWords.doubleDigitFilter("01234")).isFalse();
+        assertThat(DigitsToWords.doubleDigitFilter("10234")).isFalse();
+        assertThat(DigitsToWords.doubleDigitFilter("23114")).isFalse();
+        assertThat(DigitsToWords.doubleDigitFilter("23411")).isFalse();
 
-    @Test
-    void combinationStreamGenerator() {
-        qt().forAll(strings().betweenCodePoints(0x0030, 0x0039).ofLengthBetween(0, 10)).checkAssert(
-                inputString -> {
-                    List<String> listOfCombinations = DigitsToWords.digitListGeneratorStreaming(inputString);
-                    if (inputString.length() == 0) {
-                        assertThat(listOfCombinations.size()).isEqualTo(1);
-                    } else {
-                        assertThat((double) listOfCombinations.size()).isEqualTo(Math.pow(2, inputString.length() - 1));
-                    }
-                    assertThat(listOfCombinations).contains(inputString);
-                }
-        );
-    }
-
-
-    /**
-     * Looks like I run out of heap at lengths of 30 and greater - right about MAX_INT size
-     */
-    @Test
-    void bigComboGenerator() {
-        qt().forAll(strings().betweenCodePoints(0x0030, 0x0039).ofLength(20)).checkAssert(
-                inputString -> {
-                    List<String> listOfCombinations = DigitsToWords.digitListGeneratorStreaming(inputString);
-                    assertThat((double) listOfCombinations.size()).isEqualTo(Math.pow(2, inputString.length() - 1));
-                    assertThat(listOfCombinations).contains(inputString);
-                }
-        );
+        assertThat(DigitsToWords.doubleDigitFilter("12034")).isTrue();
+        assertThat(DigitsToWords.doubleDigitFilter("120314")).isTrue();
     }
 
 }
