@@ -8,6 +8,7 @@ import java.io.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.quicktheories.QuickTheory.qt;
+import static org.quicktheories.generators.SourceDSL.integers;
 import static org.quicktheories.generators.SourceDSL.strings;
 
 class DigitsToWordsTest {
@@ -86,7 +87,7 @@ class DigitsToWordsTest {
 
         assertThat(outContent.toString()).isEmpty();
     }
-        /**
+    /**
      * This tests to make sure user input is valid
      * Output is expected to be only digits, or an empty string
      */
@@ -111,4 +112,27 @@ class DigitsToWordsTest {
         assertThat(DigitsToWords.doubleDigitFilter("120314")).isTrue();
     }
 
+    @Test
+    void finalFilterTest() {
+
+        assertThat(DigitsToWords.stringFilter("")).isFalse();
+        assertThat(DigitsToWords.stringFilter("  ")).isFalse();
+
+        qt().forAll(
+                integers().allPositive(),
+                strings().betweenCodePoints(Character.codePointAt("A", 0), Character.codePointAt("Z", 0)).ofLengthBetween(1,3))
+                .checkAssert((number, word) -> {
+                    assertThat(DigitsToWords.stringFilter(number.toString())).isFalse();
+
+                    assertThat(DigitsToWords.stringFilter(number + WordCombiner.WORD_SEPARATOR + number + WordCombiner.WORD_SEPARATOR + number)).isFalse();
+                    assertThat(DigitsToWords.stringFilter(number + WordCombiner.WORD_SEPARATOR + number + WordCombiner.WORD_SEPARATOR + word)).isFalse();
+
+                    assertThat(DigitsToWords.stringFilter(word + WordCombiner.WORD_SEPARATOR + word + WordCombiner.WORD_SEPARATOR + word)).isTrue();
+                    assertThat(DigitsToWords.stringFilter(number + WordCombiner.WORD_SEPARATOR + word + WordCombiner.WORD_SEPARATOR + word)).isTrue();
+
+                    assertThat(DigitsToWords.stringFilter(word + WordCombiner.WORD_SEPARATOR + number + WordCombiner.WORD_SEPARATOR)).isFalse();
+                    assertThat(DigitsToWords.stringFilter(WordCombiner.WORD_SEPARATOR + number + WordCombiner.WORD_SEPARATOR)).isFalse();
+                    assertThat(DigitsToWords.stringFilter(number + WordCombiner.WORD_SEPARATOR + number)).isFalse();
+                });
+    }
 }

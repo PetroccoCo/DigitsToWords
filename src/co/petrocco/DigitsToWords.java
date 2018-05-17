@@ -1,11 +1,10 @@
 package co.petrocco;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DigitsToWords {
     private static final String UNIX_DICTIONARY = "/usr/share/dict/words";
@@ -106,12 +105,48 @@ public class DigitsToWords {
 
     public void parse() {
         numbersList.parallelStream()
+                // Take the input and remove all non-digits
                 .map(DigitsToWords::sanitizeInputString)
+                // Remove any double digit strings 01, 00, etc
                 .filter(DigitsToWords::doubleDigitFilter)
-                .flatMap( sanitizedDigits -> PowerCutter.powerCutString(sanitizedDigits).stream() )
-                .filter(word -> !word.isEmpty())
-                .forEach(word -> System.out.println(word));
+                // Convert the input into stream of comma separated strings 123 -> 1,23; 12,3; 1,2,3; 123
+                .flatMap( (String sanitizedDigits) -> PowerCutter.powerCutString(sanitizedDigits).stream() )
+                // Make a list from the comma separated splits
+                .map((String csd) -> Arrays.asList(csd.split(",")))
+                // Covert the list of digits to a list of words per digit
+                .map((List<String> digitList) -> digitList.stream().map(s -> dictionary.getStringsForNumber(s)).collect(Collectors.toList()))
+                // Make every possible combination of words out of the result
+                .map( (List<List<String>> wordsList) -> WordCombiner.cartesianProduct(wordsList))
+                // Change out stream of Lists into a stream of strings
+                .flatMap( (List<String> allCombos) -> allCombos.stream())
+                // Filter output making sure we don't have double digit output
+                .filter(DigitsToWords::stringFilter)
+                // Output each string to the console
+                .forEach((String word) -> System.out.println(word));
     }
 
+    static boolean stringFilter(String potentialOutputString) {
+        // Prevent one or more digits from printing
+        if (Pattern.matches("\\d+", potentialOutputString))
+            return false;
+
+        // if two digits are next to each other skip it
+        if (Pattern.matches(".*\\d+\\-\\d+.*", potentialOutputString))
+            return false;
+
+        // make sure there is something to output
+        if (potentialOutputString.isEmpty() || potentialOutputString.trim().isEmpty())
+            return false;
+
+        // make sure we don't have any empty combos
+        if (potentialOutputString.trim().equals("-") || potentialOutputString.contains("--"))
+            return false;
+
+        // leading and trailing hyphens are bad
+        if (potentialOutputString.startsWith("-") || potentialOutputString.endsWith("-"))
+            return false;
+
+        return true;
+    }
 
 }
