@@ -35,6 +35,12 @@ class DictionaryTest {
     }
 
     @Test
+    void singleDigitTest() {
+        Dictionary dictionary = new Dictionary(new String[]{"CAT", "DOG"});
+        assertThat(dictionary.getStringsForNumber("1")).containsExactly("1");
+    }
+
+    @Test
     void dictionaryShouldNormalizeCharacters() {
         qt().forAll(strings().allPossible().ofLengthBetween(0,10)).checkAssert( inputString ->
                 {

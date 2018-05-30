@@ -6,9 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Dictionary {
     final HashMap<String, List<String>> digitsMap = new HashMap<>();
@@ -25,8 +23,7 @@ public class Dictionary {
     }
 
     public List<String> getStringsForNumber(String number) {
-        List<String> strings = digitsMap.getOrDefault(number, new ArrayList<>());
-        return strings;
+        return digitsMap.getOrDefault(number, number.length() == 1 ? Arrays.asList(number) : Collections.emptyList());
     }
 
     private void generateDictionary(String fileName) {

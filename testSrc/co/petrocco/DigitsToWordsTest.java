@@ -85,7 +85,13 @@ class DigitsToWordsTest {
         DigitsToWords digitsToWords1 = new DigitsToWords(new String[]{inputTemp.getAbsolutePath()});
         digitsToWords1.parse();
 
-        assertThat(outContent.toString()).isEmpty();
+        assertThat(outContent.toString()).isEqualTo("Options for '112337': \n" +
+                "Options for '102337': \n" +
+                "Options for '012337': \n" +
+                "Options for '002337': \n" +
+                "Options for '231137': \n" +
+                "Options for '11233700': \n" +
+                "Options for '': \n");
     }
     /**
      * This tests to make sure user input is valid
@@ -134,5 +140,21 @@ class DigitsToWordsTest {
                     assertThat(DigitsToWords.stringFilter(WordCombiner.WORD_SEPARATOR + number + WordCombiner.WORD_SEPARATOR)).isFalse();
                     assertThat(DigitsToWords.stringFilter(number + WordCombiner.WORD_SEPARATOR + number)).isFalse();
                 });
+    }
+
+    @Test
+    void extraDigitTests() {
+        String testInput = "1225563\n12255163\n122551631\n22551163\n";
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(testInput.getBytes());
+        System.setIn(byteArrayInputStream);
+
+        DigitsToWords digitsToWords = new DigitsToWords(new String[]{});
+        digitsToWords.parse();
+
+        assertThat(outContent.toString())
+                .contains("1-CALL-ME")
+                .contains("1-CALL-1-ME")
+                .contains("1-CALL-1-ME-1")
+                .doesNotContain("CALL-1-1-ME");
     }
 }

@@ -104,9 +104,11 @@ public class DigitsToWords {
     }
 
     public void parse() {
-        numbersList.parallelStream()
+        numbersList.stream()
                 // Take the input and remove all non-digits
                 .map(DigitsToWords::sanitizeInputString)
+                // Output a separator between inputs
+                .peek( sanitizedInputString -> System.out.println("Options for '"+sanitizedInputString+"': "))
                 // Remove any double digit strings 01, 00, etc
                 .filter(DigitsToWords::doubleDigitFilter)
                 // Convert the input into stream of comma separated strings 123 -> 1,23; 12,3; 1,2,3; 123
