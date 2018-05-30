@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DigitsToWords {
     private static final String UNIX_DICTIONARY = "/usr/share/dict/words";

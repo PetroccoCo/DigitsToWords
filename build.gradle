@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    testCompile "org.assertj:assertj-core:3.10.0"
+    testCompile "org.quicktheories:quicktheories:0.25"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['testSrc/']
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+mainClassName = 'co.petrocco.DigitsToWords'
+

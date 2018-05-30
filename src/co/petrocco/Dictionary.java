@@ -1,7 +1,5 @@
 package co.petrocco;
 
-import org.assertj.core.util.VisibleForTesting;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,7 +13,6 @@ public class Dictionary {
         generateDictionary(fileName);
     }
 
-    @VisibleForTesting
     Dictionary(String[] words) {
         for (String word : words) {
             addStringToDict(word);
